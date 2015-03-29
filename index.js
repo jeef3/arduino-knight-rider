@@ -5,24 +5,24 @@ board.on('ready', function () {
   var _self = this;
   var direction = 1;
   var pins = [3, 5, 6, 9, 10];
-  var pos = 4;
+  var tailLength = 1;
 
   var nextPos = function (curr) {
     var pos = {
-      half: [],
+      tail: [],
       on: pins[curr]
     };
 
     pos.off = pins.slice(0);
     pos.off.splice(pos.off.indexOf(pos.on), 1);
 
-    if (curr > 0) {
-      pos.half.push(pins[curr - 1]);
+    if (direction && curr > 0) {
+      pos.tail.push(pins[curr - 1]);
       pos.off.splice(pos.off.indexOf(pins[curr - 1]), 1);
     }
 
-    if (curr < pins.length - 1) {
-      pos.half.push(pins[curr + 1]);
+    if (!direction && curr < pins.length - 1) {
+      pos.tail.push(pins[curr + 1]);
       pos.off.splice(pos.off.indexOf(pins[curr + 1]), 1);
     }
 
@@ -32,9 +32,8 @@ board.on('ready', function () {
   var move = function(curr) {
     var pos = nextPos(curr);
 
-    console.log('curr', curr, 'pos', pos);
     five.Leds(pos.off).off();
-    five.Leds(pos.half).brightness(10);
+    five.Leds(pos.tail).brightness(10);
     five.Led(pos.on).on();
 
     _self.wait(200, function () {

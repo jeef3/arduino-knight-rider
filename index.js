@@ -7,36 +7,43 @@ board.on('ready', function () {
   var pins = [3, 5, 6, 9, 10];
   var tailLength = 1;
 
-  var nextPos = function (curr) {
-    var pos = {
+  var getState = function (curr) {
+    var state = {
       tail: [],
       on: pins[curr]
     };
 
-    pos.off = pins.slice(0);
-    pos.off.splice(pos.off.indexOf(pos.on), 1);
+    state.off = pins.slice(0);
+    state.off.splice(state.off.indexOf(state.on), 1);
 
+    var index, i;
     if (direction && curr > 0) {
-      pos.tail.push(pins[curr - 1]);
-      pos.off.splice(pos.off.indexOf(pins[curr - 1]), 1);
+      for (i = 0; i < tailLength; i++) {
+        index = curr - (i + 1);
+        state.tail.push(pins[index]);
+        state.off.splice(state.off.indexOf(pins[index]), 1);
+      }
     }
 
     if (!direction && curr < pins.length - 1) {
-      pos.tail.push(pins[curr + 1]);
-      pos.off.splice(pos.off.indexOf(pins[curr + 1]), 1);
+      for (i = 0; i < tailLength; i++) {
+        index = curr + (i + 1);
+        state.tail.push(pins[index]);
+        state.off.splice(state.off.indexOf(pins[index]), 1);
+      }
     }
 
-    return pos;
+    return state;
   };
 
   var move = function(curr) {
-    var pos = nextPos(curr);
+    var state = getState(curr);
 
-    five.Leds(pos.off).off();
-    five.Leds(pos.tail).brightness(10);
-    five.Led(pos.on).on();
+    five.Leds(state.off).off();
+    five.Leds(state.tail).brightness(30);
+    five.Led(state.on).on();
 
-    _self.wait(200, function () {
+    _self.wait(150, function () {
       var shift;
       if (direction) {
         shift = curr + 1;

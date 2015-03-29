@@ -72,7 +72,7 @@ board.on('ready', function () {
     var state = getState(vector);
     renderState(state);
 
-    _self.wait(550, function () {
+    _self.wait(150, function () {
       next(getNextVector(vector));
     });
   };
